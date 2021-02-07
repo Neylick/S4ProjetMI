@@ -81,13 +81,13 @@ class DigraphTest(unittest.TestCase):
     self.assertIs(self.g.outputs, gbis.outputs) 
 
   def test_gets(self):
-    self.assertEqual(self.g.get_input_ids, self.g.inputs)
+    self.assertEqual(self.g.get_input_ids(), self.g.inputs)
     self.assertEqual(self.g.get_output_ids(), self.g.outputs)
     self.assertEqual(self.g.get_id_node_map(), self.g.nodes)
     self.assertEqual(self.g.get_nodes(), [self.g.nodes[k] for k in self.g.nodes])
     self.assertEqual(self.g.get_nodes_ids(), [k for k in self.g.nodes])
     self.assertEqual(self.g.get_nodes_by_ids(self.g.nodes), [self.g.nodes[k] for k in self.g.nodes])
-    self.assertEqual(self.g.get_node_by_id(self.g.nodes[0]), self.g.nodes[0])
+    self.assertEqual(self.g.get_node_by_id(0), self.g.nodes[0])
 
   def test_sets(self):
     self.g.set_input_ids([1,2])

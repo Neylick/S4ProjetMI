@@ -1,3 +1,5 @@
+from modules.utils import *
+
 class node:
   def __init__(self, identity, label, parents, children):
     '''
@@ -43,15 +45,32 @@ class node:
 
   def set_parent_ids(self, _ids):
     self.parents = _ids
+    self.parents.sort()
   
   def set_children_ids(self, _ids):
     self.children = _ids
+    self.children.sort()
 
   def add_child_id(self, _id):
     self.children.append(_id)
+    self.children.sort()
 
   def add_parent_id(self, _id):
     self.parents.append(_id)
+    self.parents.sort()
+
+  def remove_child_id(self, _id):
+    self.children.remove(_id)
+
+  def remove_parent_id(self, _id):
+    self.parents.remove(_id)
+
+  def remove_child_id_all(self, _id):
+    remove_all(self.children, _id)
+
+  def remove_parent_id_all(self, _id):
+    remove_all(self.parents, _id)
+
 
 class open_digraph: # for open directed graph
   def __init__(self, inputs, outputs, nodes):
@@ -113,14 +132,65 @@ class open_digraph: # for open directed graph
     self.outputs.append(_id)
 
   def new_id(self):
-    if len(node) == 0 : return 0
+    if len(node) == 0 : 
+      return 0
     else :
       nextid = float('-inf')
       for n in self.nodes :
-        if n.id > nextid : nextid = n.id+1
+        if n.id > nextid : 
+          nextid = n.id+1
       return nextid
 
+  def add_edge(self, src, tgt):
+    self.nodes[src].add_child_id(tgt)
+    self.nodes[tgt].add_parent_id(src)
+    if len(self.nodes[src].get_parent_ids()) == 0 and src not in self.get_input_ids() :
+      self.add_input_id(src)
+    if len(self.nodes[tgt].get_children_ids()) == 0 and tgt not in self.get_output_ids() :
+      self.add_output_id(tgt)
+  
+  def add_edges(self, srcs_and_tgts):
+    for couple in srcs_and_tgts :
+      self.add_edge(couple[0], couple[1])
 
+  def add_node(self, label="", parents=[], children=[]):
+    indice = self.new_id()
+    n = node(indice, label, parents, children)
+    self.nodes[indice] = n
+    for p in parents : self.nodes[p].add_child_id(indice)
+    for c in children : self.nodes[c].add_parent_id(indice)
+    return indice
+
+  def remove_edge(self, src, tgt):
+    self.nodes[src].remove_child_id(tgt)
+    self.nodes[tgt].remove_parent_id(src)
+    if src in self.inputs and len(self.nodes[src].get_children_ids()) == 0 :
+      self.inputs.remove(src)
+    if tgt in self.outputs and len(self.nodes[tgt].get_parent_ids()) == 0 :
+      self.inputs.remove(src)
+
+  def remove_node_by_id(self, _id):
+    for p in self.nodes[_id].get_parent_ids():
+      self.nodes[p].remove_child_id_all(_id)
+    for c in self.nodes[_id].get_children_ids():
+      self.nodes[c].remove_parent_id_all(_id)
+    return self.nodes.pop(_id)
+
+  def is_well_formed(self):
+    for inp in self.inputs:
+      if inp not in self.nodes : return False
+    for out in self.outputs:
+      if out not in self.nodes : return False
+    for k in self.nodes:
+      if self.nodes[k].id is not k : return False
+      prev = -1
+      for c in self.nodes[k].get_children_ids() :
+        if c != prev :
+          prev = c
+          occ = count_occurences(self.nodes[k].get_children_ids(), c)
+          if (count_occurences(self.nodes[c].get_parents_ids(), k) != occ) :
+            return False
+    return True
 
 '''
 n0=node(0,'a',[],[1])
