@@ -131,6 +131,7 @@ class open_digraph: # for open directed graph
   def add_output_id(self, _id):
     self.outputs.append(_id)
 
+  #A tester :
   def new_id(self):
     if len(node) == 0 : 
       return 0

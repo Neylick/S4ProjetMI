@@ -3,6 +3,7 @@ sys.path.append('./../') # allows us to fetch files from the project root
 import unittest
 from modules.open_digraph import *
 
+#initialisation tests for both open_digraphs and nodes
 class InitTest(unittest.TestCase):
 
   def test_init_node(self):
@@ -22,6 +23,7 @@ class InitTest(unittest.TestCase):
     self.assertEqual(g.outputs, [1])
     self.assertIsInstance(g, open_digraph)
 
+#node tests
 class NodeTest(unittest.TestCase):
   def setUp(self):
     self.n0 = node(0, 'a', [], [1])
@@ -64,6 +66,20 @@ class NodeTest(unittest.TestCase):
     self.n0.add_parent_id(999)
     self.assertIn(999, self.n0.parents)
 
+  def test_remove(self):
+    n3 = node(3,'c',[4,4,4], [])
+    n4 = node(4,'d',[0,0,0], [3,3,3])
+    self.n0.remove_child_id(1)
+    self.assertNotIn(1, self.n0.get_children_ids())
+    self.n1.remove_parent_id(0)
+    self.assertNotIn(0, self.n1.get_parent_ids())
+    n3.remove_parent_id_all(4)
+    n4.remove_child_id_all(3)
+    self.assertEqual(n3.get_parent_ids(), [])
+    self.assertEqual(n4.get_children_ids(), [])
+    
+
+#open_digraph tests
 class DigraphTest(unittest.TestCase):
   def setUp(self):
     n0 = node(0, 'i', [], [1])
