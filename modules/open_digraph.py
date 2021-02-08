@@ -22,6 +22,9 @@ class node:
   def __repr__(self):
     return "node"+str(self)
 
+  def __eq__(self, n):
+    return n.id == self.id and n.label == self.label and n.parents == self.parents and n.children == self.children
+
   def copy(self):
     return node(self.id, self.label, self.parents.copy(), self.children.copy())
 
@@ -92,7 +95,10 @@ class open_digraph: # for open directed graph
   def __repr__(self):
     return "graph"+str(self)
 
-  def empty():
+  def __eq__(self, g):
+    return self.inputs == g.inputs and self.outputs == g.outputs and self.nodes == g.nodes
+
+  def empty(self):
     return open_digraph([],[],{})
 
   def copy(self):
@@ -133,14 +139,8 @@ class open_digraph: # for open directed graph
 
   #A tester :
   def new_id(self):
-    if len(node) == 0 : 
-      return 0
-    else :
-      nextid = float('-inf')
-      for n in self.nodes :
-        if n.id > nextid : 
-          nextid = n.id+1
-      return nextid
+    if len(self.nodes) == 0 : return 0
+    else : return max([n for n in self.nodes]) + 1
 
   def add_edge(self, src, tgt):
     self.nodes[src].add_child_id(tgt)
@@ -156,8 +156,7 @@ class open_digraph: # for open directed graph
 
   def add_node(self, label="", parents=[], children=[]):
     indice = self.new_id()
-    n = node(indice, label, parents, children)
-    self.nodes[indice] = n
+    self.nodes[indice] = node(indice, label, parents, children)
     for p in parents : self.nodes[p].add_child_id(indice)
     for c in children : self.nodes[c].add_parent_id(indice)
     return indice
@@ -171,10 +170,14 @@ class open_digraph: # for open directed graph
       self.inputs.remove(src)
 
   def remove_node_by_id(self, _id):
+    is_out = _id in self.get_output_ids()
+    is_in = _id in self.get_input_ids()
     for p in self.nodes[_id].get_parent_ids():
       self.nodes[p].remove_child_id_all(_id)
+      if is_out : self.add_output_id(p)
     for c in self.nodes[_id].get_children_ids():
       self.nodes[c].remove_parent_id_all(_id)
+      if is_in : self.add_input_id(c)
     return self.nodes.pop(_id)
 
   def is_well_formed(self):
@@ -189,7 +192,7 @@ class open_digraph: # for open directed graph
         if c != prev :
           prev = c
           occ = count_occurences(self.nodes[k].get_children_ids(), c)
-          if (count_occurences(self.nodes[c].get_parents_ids(), k) != occ) :
+          if (count_occurences(self.nodes[c].get_parent_ids(), k) != occ) :
             return False
     return True
 

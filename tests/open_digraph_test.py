@@ -68,7 +68,7 @@ class NodeTest(unittest.TestCase):
 
   def test_remove(self):
     n3 = node(3,'c',[4,4,4], [])
-    n4 = node(4,'d',[0,0,0], [3,3,3])
+    n4 = node(4,'d',[], [3,3,3])
     self.n0.remove_child_id(1)
     self.assertNotIn(1, self.n0.get_children_ids())
     self.n1.remove_parent_id(0)
@@ -82,9 +82,9 @@ class NodeTest(unittest.TestCase):
 #open_digraph tests
 class DigraphTest(unittest.TestCase):
   def setUp(self):
-    n0 = node(0, 'i', [], [1])
-    n1 = node(1,'r',[0],[])
-    self.g = open_digraph([0],[1],[n0,n1])
+    self.n0 = node(0, 'i', [], [1])
+    self.n1 = node(1,'r',[0],[])
+    self.g = open_digraph([0],[1],[self.n0,self.n1])
 
   def test_string(self):
     self.assertEqual(self.g.__str__(), "([0], [1], {0: node(0, 'i', [], [1]), 1: node(1, 'r', [0], [])})")
@@ -121,6 +121,56 @@ class DigraphTest(unittest.TestCase):
     self.g.add_output_id(-999)
     self.assertIn(-999, self.g.outputs)
 
+  def test_new_id(self):
+    n = self.g.new_id()
+    self.assertNotIn(n, self.g.nodes)
+
+  def test_new_edge(self):
+    self.g.add_edge(1, 0)
+    self.assertIn(1, self.n0.get_parent_ids())
+    self.assertIn(0, self.n1.get_children_ids())
+
+  def test_add_node(self):
+    longueur = len(self.g.nodes)
+    c = self.g.add_node('c',[],[])
+    d = self.g.add_node('d',[],[])
+    self.assertIn(c, self.g.get_nodes_ids())
+    self.assertIn(d, self.g.get_nodes_ids())
+    self.assertEqual(len(self.g.nodes), longueur+2)
+
+  def test_add_edges(self):
+    c = self.g.add_node('c',[],[])
+    d = self.g.add_node('d',[],[])
+    self.g.add_edges([(c,d),(c,d),(c,d)])
+    self.assertIn(d, self.g.nodes[c].get_children_ids())
+    self.assertIn(c, self.g.nodes[d].get_parent_ids())
+    self.assertEqual(count_occurences(self.g.nodes[c].get_children_ids(), d), 3)
+    self.assertEqual(count_occurences(self.g.nodes[d].get_parent_ids(), c), 3)
+
+  def test_remove_edge(self):
+    n0_1 = self.n0.copy()
+    n1_1 = self.n1.copy()
+    g_1 = self.g.copy()
+    self.g.add_edge(1, 0)
+    self.g.remove_edge(1, 0)
+    self.assertEqual(n0_1, self.n0)
+    self.assertEqual(n1_1, self.n1)
+    self.assertEqual(self.g, g_1)
+
+  def test_remove_node_by_id(self):
+    g_1 = self.g.copy()
+    n = self.g.add_node('test',[],[])
+    self.g.remove_node_by_id(n)
+    self.assertEqual(g_1, self.g)
+
+  def test_well_formed(self):
+    gtest = open_digraph([],[],[])
+    self.assertTrue(gtest.is_well_formed())
+    a = gtest.add_node()
+    b = gtest.add_node()
+    gtest.add_edge(a,b)
+    gtest.add_edge(b,a)
+    self.assertTrue(gtest.is_well_formed())
 
 if __name__ == '__main__': # the following code is called only when
   unittest.main() # precisely this file is run 
