@@ -98,7 +98,7 @@ class open_digraph: # for open directed graph
   def __eq__(self, g):
     return self.inputs == g.inputs and self.outputs == g.outputs and self.nodes == g.nodes
 
-  def empty(self):
+  def empty():
     return open_digraph([],[],{})
 
   def copy(self):
@@ -196,11 +196,58 @@ class open_digraph: # for open directed graph
             return False
     return True
 
-'''
-n0=node(0,'a',[],[1])
-n1=node(1,'b',[1],[0])
-g=open_digraph([0],[1],[n0,n1])
-print(n0)
-print(g)
-print(open_digraph.empty())
-'''
+  def graph_from_adjacency_matrix(self, matrix):
+    size = len(matrix)
+    res = open_digraph.empty()
+    for i in range(0, size):
+      for j in range(0, size):
+        x = matrix[i][j]
+        if x != 0 :
+          if i not in res.nodes :
+            children = [j for _ in range(0,x)]
+            res.nodes[i] = node(i, '%d' % i, [], children)
+          if j not in res.nodes :
+            parents = [i for _ in range(0, x)]
+            nj = node(j,'%d' % j, parents, [])
+            res.nodes[j] = nj
+          
+          edges = [(i,j) for _ in range(0, x)]
+          res.add_edges(edges)
+    return res
+
+  def random(self, size, bound, inputs=[], outputs=[], form="free", loop_free=False):
+    '''
+      A COMPLETER
+    '''
+    res = open_digraph.empty()
+    if "loop-free" in form or "loop_free" in form or "noloop" in form :
+      if "DAG" in form:
+        res= self.graph_from_adjacency_matrix(random_triangular_int_matrix(size,bound,True))
+      elif "oriented" in form:
+        res= self.graph_from_adjacency_matrix(random_oriented_int_matrix(size,bound,True))
+      elif "undirected" in form:
+        res= self.graph_from_adjacency_matrix(random_symetric_int_matrix(size,bound,True))
+      else :
+        res= self.graph_from_adjacency_matrix(random_int_matrix(size,bound,True))
+    else :
+      if "DAG" in form:
+        res= self.graph_from_adjacency_matrix(random_triangular_int_matrix(size,bound,False))
+      elif "oriented" in form:
+        res= self.graph_from_adjacency_matrix(random_oriented_int_matrix(size,bound,False))
+      elif "undirected" in form:
+        res= self.graph_from_adjacency_matrix(random_symetric_int_matrix(size,bound,False))
+      else :
+        res= self.graph_from_adjacency_matrix(random_int_matrix(size,bound,False))
+    res.set_input_ids(inputs)
+    res.set_output_ids(outputs)
+    return res
+
+  def change_id(self, node_id , new_id):
+    if new_id in self.nodes :
+      self.change_id(new_id, self.new_id())
+    n = self.get_node_by_id(node_id)
+    for p in n.parents :
+      self.nodes[p]. 
+    for c in n.children :
+      self.nodes[c].remove_parent_id_all(node_id)
+    

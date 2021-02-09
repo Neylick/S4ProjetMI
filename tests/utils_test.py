@@ -3,7 +3,7 @@ sys.path.append('./../') # allows us to fetch files from the project root
 import unittest
 from modules.utils import *
 
-class list_utils_test(unittest.TestCase):
+class int_list_utils_test(unittest.TestCase):
   
   def test_remove_all(self):
     l = [1,0,0,1,9]
@@ -19,6 +19,16 @@ class list_utils_test(unittest.TestCase):
     self.assertEqual( count_occurences(l,1), 2 )
     self.assertEqual( count_occurences(l,9), 1 )
     self.assertEqual( count_occurences(l,10), 0 )
+  
+  def test_random_list(self):
+    self.assertEqual(len(random_int_list(5,5)),5)
+    self.assertEqual(random_int_list(0,5), [])
+
+class matrix_test(unittest.TestCase):
+  
+  def test_random_int_matrix(self):
+    self.assertEqual(len(random_int_matrix(5,5)),5)
+    for i in range(0,5) : self.assertEqual(len(random_int_matrix(5,5)[i]), 5)
 
 if __name__ == '__main__': # the following code is called only when
   unittest.main() # precisely this file is run 
