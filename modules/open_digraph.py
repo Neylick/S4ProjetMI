@@ -242,6 +242,7 @@ class open_digraph: # for open directed graph
     res.set_output_ids(outputs)
     return res
 
+'''
   def change_id(self, node_id , new_id):
     if new_id in self.nodes :
       self.change_id(new_id, self.new_id())
@@ -250,4 +251,4 @@ class open_digraph: # for open directed graph
       self.nodes[p]. 
     for c in n.children :
       self.nodes[c].remove_parent_id_all(node_id)
-    
+'''
