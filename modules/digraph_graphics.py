@@ -12,7 +12,6 @@ image = Image.new("RGB", (width, height), 'white')
 draw = ImageDraw.Draw(image)
 
 
-
 class vertex:
   def __init__(self,x,y):
     self.x = x
@@ -50,10 +49,10 @@ ImageDraw.ImageDraw.node = drawnode
 def drawgraph(self, graph, method='manual', node_pos=None, input_pos=None, output_pos=None):
   '''doc : todo'''
   if method == 'random' or method == 'rand' :
-    layout = self.random_layout(graph)
+    layout = random_layout(graph)
     drawgraph(graph, 'manual', layout[0], layout[1], layout[2])
   if method == 'circle' :
-    layout = self.circle_layout(graph)
+    layout = circle_layout(graph)
     drawgraph(graph, 'manual', layout[0], layout[1], layout[2])
   else :
     for k in graph.get_id_node_map() :
@@ -65,7 +64,7 @@ def drawgraph(self, graph, method='manual', node_pos=None, input_pos=None, outpu
 
 ImageDraw.ImageDraw.graph = drawgraph
 
-def random_layout(self, graph):
+def random_layout(graph):
   '''doc : todo'''
   graph_node_dic = graph.get_id_node_map()
   graph_inputs = graph.get_input_ids()
@@ -75,7 +74,7 @@ def random_layout(self, graph):
   output_pos = [node_pos[k]+vertex(randrange(0,width/10), randrange(0, height/10)) for k in graph_outputs]
   return (node_pos, input_pos, output_pos)
 
-def circle_layout(self, graph):
+def circle_layout(graph):
   '''doc : todo'''
   v = vertex(3*width/4, 3*height/4)
   size = len(graph.get_nodes())

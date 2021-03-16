@@ -74,6 +74,15 @@ class node:
   def remove_parent_id_all(self, _id):
     remove_all(self.parents, _id)
 
+  def indegree(self):
+    return len(self.parents)
+
+  def outdegree(self):
+    return len(self.children)
+  
+  def degree(self):
+    return self.indegree() + self.outdegree()
+
 
 class open_digraph: # for open directed graph
   def __init__(self, inputs, outputs, nodes):
@@ -140,7 +149,7 @@ class open_digraph: # for open directed graph
   #A tester :
   def new_id(self):
     if len(self.nodes) == 0 : return 0
-    else : return max([n for n in self.nodes]) + 1
+    else : return max(self.get_nodes_ids()) + 1
 
   def add_edge(self, src, tgt):
     self.nodes[src].add_child_id(tgt)
@@ -241,6 +250,36 @@ class open_digraph: # for open directed graph
     res.set_input_ids(inputs)
     res.set_output_ids(outputs)
     return res
+
+  def max_indegree(self):
+    return max([n.indegree for n in self.get_nodes()])
+
+  def min_indegree(self):
+    return min([n.indegree for n in self.get_nodes()])
+
+  def max_outdegree(self):
+    return max([n.outdegree for n in self.get_nodes()])
+
+  def min_outdegree(self):
+    return min([n.outdegree for n in self.get_nodes()])
+
+  def max_degree(self):
+    return max(self.max_indegree, self.max_outdegree)
+
+  def min_degree(self):
+    return min(self.min_indegree, self.min_outdegree)
+
+  def is_cyclic(self):
+    g = self.copy()
+    while len(g.get_nodes() != 0):
+      for k in g.get_id_node_map() :
+        n = g.get_node_by_id(k)
+        if n.indegree() == 0 : 
+          g.remove_node_by_id(k)
+          break
+      return False
+    return True
+
 
 '''
   def change_id(self, node_id , new_id):
