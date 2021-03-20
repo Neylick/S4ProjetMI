@@ -26,11 +26,14 @@ class vertex:
     return vertex(self.x-vertex.x, self.y-vertex.y)
   def __rmul__(self, scalar):
     return vertex(self.x*scalar, self.y*scalar)
-  def rotate(self, angle, vertex=vertex(0,0)):
-    return vertex+(math.cos(angle)*(self.x-vertex.x), math.sin(angle)*(self.y-vertex.y)) 
+  def rotate(self, angle, v=None):
+    if v is None : v = vertex(0,0)
+    return v+(math.cos(angle)*(self.x-v.x), math.sin(angle)*(self.y-v.y)) 
 
 def drawarrow(self, v1, v2):
-  '''doc : todo'''
+  '''
+  doc : todo
+  '''
   self.line([v1.coord(),v2.coord], 'black')
   s = slope_angle(v1,v2)
   m = (v1+v2)*1/2
@@ -40,14 +43,18 @@ def drawarrow(self, v1, v2):
 ImageDraw.ImageDraw.arrow = drawarrow
 
 def drawnode(self, node, vertex, verbose=False):
-  '''doc : todo'''
+  '''
+  draws a node one the selected vertex, if verbose is true, also shows its id.
+  '''
   self.ellipse((vertex.x, vertex.y,1,1), fill='black')
   self.text(vertex+vertex(1,1), node.get_label(), fill='black')
   if verbose : self.text(vertex-vertex(1,1), node.get_id(), fill='black')
 ImageDraw.ImageDraw.node = drawnode
 
-def drawgraph(self, graph, method='manual', node_pos=None, input_pos=None, output_pos=None):
-  '''doc : todo'''
+def drawgraph(self, graph, method='manual', node_pos=dict(), input_pos=[], output_pos=[]):
+  '''
+  draws a graph with selected layout (and positions if manual)   
+  '''
   if method == 'random' or method == 'rand' :
     layout = random_layout(graph)
     drawgraph(graph, 'manual', layout[0], layout[1], layout[2])
@@ -65,7 +72,9 @@ def drawgraph(self, graph, method='manual', node_pos=None, input_pos=None, outpu
 ImageDraw.ImageDraw.graph = drawgraph
 
 def random_layout(graph):
-  '''doc : todo'''
+  '''
+  returns node positions, input positions, output positions, all randomized
+  '''
   graph_node_dic = graph.get_id_node_map()
   graph_inputs = graph.get_input_ids()
   graph_outputs = graph.get_output_ids()
@@ -75,7 +84,9 @@ def random_layout(graph):
   return (node_pos, input_pos, output_pos)
 
 def circle_layout(graph):
-  '''doc : todo'''
+  '''
+  returns node positions, input positions, output positions, making it so that it's all placed as a circle layout
+  '''
   v = vertex(3*width/4, 3*height/4)
   size = len(graph.get_nodes())
   graph_inputs = graph.get_input_ids()
@@ -86,7 +97,9 @@ def circle_layout(graph):
   return (node_pos, input_pos, output_pos)
 
 def slope_angle(v1, v2):
-  '''doc : todo'''
+  '''
+  returns the slope between the two given vector's angle 
+  '''
   a = (v2.y-v1.y)/(v2.x-v1.x)
   b = v2.y%(a*v2.x)
   vertex(-b/a, 0)

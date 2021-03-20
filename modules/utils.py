@@ -1,18 +1,30 @@
 from random import randrange
 
 def remove_all(l, x):
+  '''
+  removes all occurence of x in the list l
+  '''
   while x in l : l.remove(x)
 
 def count_occurences(l,x):
+  '''
+  returns the number of occurences of x in the list l
+  '''
   cpt = 0
   for n in l : 
     if n == x : cpt = cpt+1
   return cpt
 
 def random_int_list(size,bound):
+  '''
+  returns a random list of integers
+  '''
   return [int(randrange(0,bound)) for _ in range(0,size)]
 
 def random_int_matrix(size, bound, null_diag=True, symetric=False, oriented=False):
+  '''
+  returns a random integer matrix with selected attributes
+  '''
   if symetric : return random_symetric_int_matrix(size, bound, null_diag)
   if oriented : return random_oriented_int_matrix(size, bound, null_diag)
 
@@ -22,6 +34,9 @@ def random_int_matrix(size, bound, null_diag=True, symetric=False, oriented=Fals
   return res
 
 def random_symetric_int_matrix(size, bound, null_diag=True):
+  '''
+  returns a random integer symetric matrix
+  '''
   res = random_int_matrix(size, bound, null_diag)
   for i in range(0,size):
     for j in range(0,i):
@@ -29,6 +44,9 @@ def random_symetric_int_matrix(size, bound, null_diag=True):
   return res
 
 def random_oriented_int_matrix(size, bound, null_diag=True):
+  '''
+  returns a random integer oriented matrix
+  '''
   res = random_int_matrix(size, bound, null_diag)
   for i in range(0,size):
     for j in range(0,i):
@@ -42,14 +60,11 @@ def random_oriented_int_matrix(size, bound, null_diag=True):
   return res
 
 def random_triangular_int_matrix(size, bound, null_diag=True):
+  '''
+  returns a random integer (lower) triangular matrix
+  '''
   res = random_int_matrix(size, bound, null_diag)
   for i in range(0,size):
     for j in range(1,i):
       res[i][size-j] = 0
   return res
-
-
-'''LATER:
-def random_matrix(size, bound, null_diag=True, \
-                  symetric=False, oriented=False, triangular=False):
-'''

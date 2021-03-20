@@ -25,62 +25,116 @@ class node:
   def __eq__(self, n):
     return n.id == self.id and n.label == self.label and n.parents == self.parents and n.children == self.children
 
-  def copy(self):
+  def copy(self): 
+    '''
+    returns a copy of the node
+    '''
     return node(self.id, self.label, self.parents.copy(), self.children.copy())
 
-  def get_id(self):
+  def get_id(self): 
+    '''
+    returns the node's id
+    '''
     return self.id 
 
-  def get_label(self):
+  def get_label(self): 
+    '''
+    return the node's label
+    '''
     return self.label
   
-  def get_parent_ids(self):
+  def get_parent_ids(self): 
+    '''
+    return the node's parents
+    '''
     return self.parents
   
-  def get_children_ids(self):
+  def get_children_ids(self): 
+    '''
+    return the node's children
+    '''
     return self.children
 
-  def set_id(self, _id):
+  def set_id(self, _id): 
+    '''
+    sets the node's id
+    '''
     self.id = _id
 
-  def set_label(self, _label):
+  def set_label(self, _label): 
+    '''
+    sets the node's label
+    '''
     self.label = _label
 
-  def set_parent_ids(self, _ids):
+  def set_parent_ids(self, _ids): 
+    '''
+    sets the node's parents
+    '''
     self.parents = _ids
     self.parents.sort()
   
-  def set_children_ids(self, _ids):
+  def set_children_ids(self, _ids): 
+    '''
+    sets the node's children
+    '''
     self.children = _ids
     self.children.sort()
 
-  def add_child_id(self, _id):
+  def add_child_id(self, _id): 
+    '''
+    add a node's id to the children list of the node
+    '''
     self.children.append(_id)
     self.children.sort()
 
-  def add_parent_id(self, _id):
+  def add_parent_id(self, _id): 
+    '''
+    add a node's id to the parents list of the node
+    '''
     self.parents.append(_id)
     self.parents.sort()
 
-  def remove_child_id(self, _id):
+  def remove_child_id(self, _id): 
+    '''
+    removes a node's id from the children list of the node
+    '''
     self.children.remove(_id)
 
-  def remove_parent_id(self, _id):
+  def remove_parent_id(self, _id): 
+    '''
+    removes a node's id from the parents list of the node
+    '''
     self.parents.remove(_id)
 
-  def remove_child_id_all(self, _id):
+  def remove_child_id_all(self, _id): 
+    '''
+    remove all occurences of an id from the children list of the node
+    '''
     remove_all(self.children, _id)
 
-  def remove_parent_id_all(self, _id):
+  def remove_parent_id_all(self, _id): 
+    '''
+    remove all occurences of an id from the parents list of the node
+    '''
     remove_all(self.parents, _id)
 
-  def indegree(self):
+  def indegree(self): 
+    '''
+    returns the number of parents of the node
+    '''
     return len(self.parents)
 
   def outdegree(self):
+    '''
+    returns the number of children of the node
+    '''
     return len(self.children)
   
   def degree(self):
+    '''
+    returns the total degree of the node
+    '''
     return self.indegree() + self.outdegree()
 
 
@@ -105,53 +159,101 @@ class open_digraph: # for open directed graph
     return "graph"+str(self)
 
   def __eq__(self, g):
+    '''
+    wether or not the open_digraph g is equal to the selected open_digraph
+    '''
     return self.inputs == g.inputs and self.outputs == g.outputs and self.nodes == g.nodes
 
   def empty():
+    '''
+    sets the open_digraph as an empty one
+    '''
     return open_digraph([],[],{})
 
   def copy(self):
+    '''
+    returns a copy of the open_digraph
+    '''
     return open_digraph(self.inputs, self.outputs, [self.nodes[k].copy() for k in self.nodes])
 
   def get_input_ids(self):
+    '''
+    returns the graph's input nodes' ids
+    '''
     return self.inputs
   
   def get_output_ids(self):
+    '''
+    returns the graph's output nodes' ids
+    '''
     return self.outputs
   
   def get_id_node_map(self):
+    '''
+    returns the graph's node dictionnary : matching id to nodes
+    '''
     return self.nodes
   
   def get_nodes(self):
+    '''
+    returns a list of the graph's nodes object
+    '''
     return [self.nodes[k] for k in self.nodes]
   
   def get_nodes_ids(self):
+    '''
+    returns a list of the graph's nodes' ids
+    '''
     return [k for k in self.nodes]
 
   def get_node_by_id(self, _id):
+    '''
+    returns the node corresponding to the given id
+    '''
     return self.nodes[_id]
 
   def get_nodes_by_ids(self, _ids):
+    '''
+    returns a list of node from a list of id
+    '''
     return [self.nodes[k] for k in _ids]
 
   def set_input_ids(self, _ids):
+    '''
+    sets the graph's input nodes' ids
+    '''
     self.inputs = _ids
   
   def set_output_ids(self, _ids):
+    '''
+    sets the graph's output nodes' ids
+    '''
     self.outputs = _ids
 
   def add_input_id(self, _id):
+    '''
+    adds the given id to the input id list
+    '''
     self.inputs.append(_id)
 
   def add_output_id(self, _id):
+    '''
+    adds the given id to the output id list
+    '''
     self.outputs.append(_id)
 
   #A tester :
   def new_id(self):
+    '''
+    returns an id that is not already in the digraph 
+    '''
     if len(self.nodes) == 0 : return 0
     else : return max(self.get_nodes_ids()) + 1
 
   def add_edge(self, src, tgt):
+    '''
+    adds an edge between the given source and target nodes
+    '''
     self.nodes[src].add_child_id(tgt)
     self.nodes[tgt].add_parent_id(src)
     if len(self.nodes[src].get_parent_ids()) == 0 and src not in self.get_input_ids() :
@@ -160,10 +262,16 @@ class open_digraph: # for open directed graph
       self.add_output_id(tgt)
   
   def add_edges(self, srcs_and_tgts):
+    '''
+    adds edges defined by a list of sources and targets couples 
+    '''
     for couple in srcs_and_tgts :
       self.add_edge(couple[0], couple[1])
 
   def add_node(self, label="", parents=[], children=[]):
+    '''
+    adds a node to the graph, with the given attributes
+    '''
     indice = self.new_id()
     self.nodes[indice] = node(indice, label, parents, children)
     for p in parents : self.nodes[p].add_child_id(indice)
@@ -171,6 +279,9 @@ class open_digraph: # for open directed graph
     return indice
 
   def remove_edge(self, src, tgt):
+    '''
+    removes an edge between the src and target nodes
+    '''
     self.nodes[src].remove_child_id(tgt)
     self.nodes[tgt].remove_parent_id(src)
     if src in self.inputs and len(self.nodes[src].get_children_ids()) == 0 :
@@ -179,6 +290,9 @@ class open_digraph: # for open directed graph
       self.inputs.remove(src)
 
   def remove_node_by_id(self, _id):
+    '''
+    removes the nodes that has the given id from the graph
+    '''
     is_out = _id in self.get_output_ids()
     is_in = _id in self.get_input_ids()
     for p in self.nodes[_id].get_parent_ids():
@@ -190,6 +304,10 @@ class open_digraph: # for open directed graph
     return self.nodes.pop(_id)
 
   def is_well_formed(self):
+    '''
+    tests if the graph is well formed : every input & output in node list, 
+    parents corresponding to children between nodes.
+    '''
     for inp in self.inputs:
       if inp not in self.nodes : return False
     for out in self.outputs:
@@ -206,6 +324,9 @@ class open_digraph: # for open directed graph
     return True
 
   def graph_from_adjacency_matrix(self, matrix):
+    '''
+    returns a graph generated from the given matrix, treated as an adjacency matrix.
+    '''
     size = len(matrix)
     res = open_digraph.empty()
     for i in range(0, size):
@@ -226,7 +347,7 @@ class open_digraph: # for open directed graph
 
   def random(self, size, bound, inputs=[], outputs=[], form="free", loop_free=False):
     '''
-      A COMPLETER
+    returns a random graph with the selected attributes 
     '''
     res = open_digraph.empty()
     if "loop-free" in form or "loop_free" in form or "noloop" in form :
@@ -252,24 +373,45 @@ class open_digraph: # for open directed graph
     return res
 
   def max_indegree(self):
+    '''
+    returns the maximum of the nodes' input degrees
+    '''
     return max([n.indegree for n in self.get_nodes()])
 
   def min_indegree(self):
+    '''
+    returns the minimum of the nodes' input degrees
+    '''
     return min([n.indegree for n in self.get_nodes()])
 
   def max_outdegree(self):
+    '''
+    returns the maximum of the nodes' output degrees
+    '''
     return max([n.outdegree for n in self.get_nodes()])
 
   def min_outdegree(self):
+    '''
+    returns the minimum of the nodes' output degrees
+    '''
     return min([n.outdegree for n in self.get_nodes()])
 
   def max_degree(self):
+    '''
+    returns the maximum of the nodes' total degrees
+    '''
     return max(self.max_indegree, self.max_outdegree)
 
   def min_degree(self):
+    '''
+    returns the minimum of the nodes' total degrees
+    '''
     return min(self.min_indegree, self.min_outdegree)
 
   def is_cyclic(self):
+    '''
+    tests wether or not the graph is cyclic : applying the algorithm from the diapositives
+    '''
     g = self.copy()
     while len(g.get_nodes() != 0):
       for k in g.get_id_node_map() :
@@ -279,15 +421,3 @@ class open_digraph: # for open directed graph
           break
       return False
     return True
-
-
-'''
-  def change_id(self, node_id , new_id):
-    if new_id in self.nodes :
-      self.change_id(new_id, self.new_id())
-    n = self.get_node_by_id(node_id)
-    for p in n.parents :
-      self.nodes[p]. 
-    for c in n.children :
-      self.nodes[c].remove_parent_id_all(node_id)
-'''
