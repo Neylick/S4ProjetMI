@@ -15,6 +15,8 @@ def count_occurences(l,x):
     if n == x : cpt = cpt+1
   return cpt
 
+#TD3
+
 def random_int_list(size,bound):
   '''
   returns a random list of integers
@@ -61,7 +63,7 @@ def random_oriented_int_matrix(size, bound, null_diag=True):
 
 def random_triangular_int_matrix(size, bound, null_diag=True):
   '''
-  returns a random integer (lower) triangular matrix
+  returns a random integer (upper) triangular matrix
   '''
   res = random_int_matrix(size, bound, null_diag)
   for i in range(0,size):

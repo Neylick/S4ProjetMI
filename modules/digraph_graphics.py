@@ -1,3 +1,5 @@
+#TD4
+
 import sys
 sys.path.append('./../')
 from PIL import Image, ImageDraw
@@ -20,35 +22,41 @@ class vertex:
     return (round(self.x), round(self.y))
   def copy(self):
     return vertex(self.x,self.y)
-  def __add__(self, vertex):
-    return vertex(self.x+vertex.x, self.y+vertex.y)
-  def __sub__(self, vertex):
-    return vertex(self.x-vertex.x, self.y-vertex.y)
+  def __add__(self, v):
+    return vertex(self.x+v.x, self.y+v.y)
+  def __sub__(self, v):
+    return vertex(self.x-v.x, self.y-v.y)
   def __rmul__(self, scalar):
     return vertex(self.x*scalar, self.y*scalar)
+  __mul__ = __rmul__
   def rotate(self, angle, v=None):
     if v is None : v = vertex(0,0)
-    return v+(math.cos(angle)*(self.x-v.x), math.sin(angle)*(self.y-v.y)) 
+    return v+vertex(math.cos(angle)*(self.x-v.x), math.sin(angle)*(self.y-v.y)) 
 
-def drawarrow(self, v1, v2):
+def drawarrow(self, v1, v2, n=1, m=0):
   '''
-  doc : todo
+  draws an arrow between the two given vertices
   '''
-  self.line([v1.coord(),v2.coord], 'black')
+  self.line([v1.coord(),v2.coord()], 'black')
   s = slope_angle(v1,v2)
-  m = (v1+v2)*1/2
-  self.line(m.rotate(s + math.pi/4))
-  self.line(m.rotate(-math.pi/4))
+  m1 = (v1+v2)*(3/4.)
+  m2 = (v1+v2)*(1/4.)
+  #First arrow
+  self.line(m1.rotate(s + math.pi/4).coord(), 'black')
+  self.line(m1.rotate(s - math.pi/4).coord(), 'black')
+  #Second arrow
+  self.line(m2.rotate(s + math.pi/4).coord(), 'black')
+  self.line(m2.rotate(s - math.pi/4).coord(), 'black')
 
 ImageDraw.ImageDraw.arrow = drawarrow
 
-def drawnode(self, node, vertex, verbose=False):
+def drawnode(self, node, v, verbose=False):
   '''
   draws a node one the selected vertex, if verbose is true, also shows its id.
   '''
-  self.ellipse((vertex.x, vertex.y,1,1), fill='black')
-  self.text(vertex+vertex(1,1), node.get_label(), fill='black')
-  if verbose : self.text(vertex-vertex(1,1), node.get_id(), fill='black')
+  self.ellipse([v.x-1, v.y-1, v.x+1, v.y+1], fill='black')
+  self.text((v+vertex(5,5)).coord(), node.get_label(), fill='black')
+  if verbose : self.text((v-vertex(12,12)).coord(), str(node.get_id()), fill='black')
 ImageDraw.ImageDraw.node = drawnode
 
 def drawgraph(self, graph, method='manual', node_pos=dict(), input_pos=[], output_pos=[]):
@@ -105,9 +113,11 @@ def slope_angle(v1, v2):
   vertex(-b/a, 0)
   return math.atan(v1.y/(v1.x+b/a))
 
-g = open_digraph.empty()
-g.random(3, 100)
-draw.graph(g)
+
+#g = open_digraph.empty()
+#g.random(3, 100)
+#draw.graph(g)
+draw.arrow(vertex(100,100),vertex(200,200))
 image.save("test.jpg")
 
 

@@ -1,6 +1,7 @@
 from modules.utils import *
 
 class node:
+  #TD1
   def __init__(self, identity, label, parents, children):
     '''
     identity: int; its unique id in the graph
@@ -95,6 +96,8 @@ class node:
     self.parents.append(_id)
     self.parents.sort()
 
+  #TD2
+
   def remove_child_id(self, _id): 
     '''
     removes a node's id from the children list of the node
@@ -118,6 +121,8 @@ class node:
     remove all occurences of an id from the parents list of the node
     '''
     remove_all(self.parents, _id)
+  
+  #TD6
 
   def indegree(self): 
     '''
@@ -139,6 +144,7 @@ class node:
 
 
 class open_digraph: # for open directed graph
+  #TD1
   def __init__(self, inputs, outputs, nodes):
     '''
     inputs: int list; the ids of the input nodes
@@ -278,6 +284,8 @@ class open_digraph: # for open directed graph
     for c in children : self.nodes[c].add_parent_id(indice)
     return indice
 
+  #TD2
+
   def remove_edge(self, src, tgt):
     '''
     removes an edge between the src and target nodes
@@ -322,6 +330,8 @@ class open_digraph: # for open directed graph
           if (count_occurences(self.nodes[c].get_parent_ids(), k) != occ) :
             return False
     return True
+
+  #TD3
 
   def graph_from_adjacency_matrix(self, matrix):
     '''
@@ -371,6 +381,45 @@ class open_digraph: # for open directed graph
     res.set_input_ids(inputs)
     res.set_output_ids(outputs)
     return res
+
+  def change_id(self, node_id, new_id):
+    
+    if new_id in self.get_nodes_ids():
+      self.change_id(new_id, self.new_id())
+    
+    n = self.get_node_by_id(node_id)
+    for p in n.parents :
+      occ = count_occurences(node_id, p.get_children_ids())
+      p.remove_child_id_all(node_id)
+      for _ in range(occ) : p.add_child_id(new_id)
+
+    for c in n.children :
+      occ = count_occurences(node_id, c.get_parents_ids())
+      c.remove_parent_id_all(node_id)
+      for _ in range(occ) : p.add_parent_id(new_id)
+
+
+  def change_ids(self, old_new_ids):
+    sorted_on_ids = sorted(old_new_ids, key=lambda tab : tab[1])
+    for a,b in sorted_on_ids :
+      self.change_id(a,b)
+
+  def normalise_ids(self):
+    ids = self.get_nodes_ids()
+    size = len(ids)
+    onids = []
+    for i in range(size): onids.append((ids[i],i))
+    self.change_ids(onids)
+
+
+  def adjacency_matrix(self):
+    matrix = [[0 for _ in len(self.get_nodes())] for _ in len(self.get_nodes())]
+    self.normalise_ids()
+    for n in self.get_nodes():
+      for nid in n.get_children_ids():
+        matrix[n.get_id()][nid] += 1
+
+  #TD6
 
   def max_indegree(self):
     '''

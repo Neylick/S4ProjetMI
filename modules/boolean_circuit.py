@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./../')
+
 from modules.open_digraph import *
 
 class bool_circ(open_digraph):
@@ -23,15 +26,17 @@ class bool_circ(open_digraph):
     tests if the boolean circuit is really a boolean circuit. \n
     label : & or | ->  1 as outdegree \n
     label : ~      ->  1 as outdegree AND 1 as indegree \n
-    label : other  ->  1 as indegree
+    label : empty  ->  1 as indegree \n
+    label : other  -> false
     '''
-    if not self.is_cyclic() : return False
+    if self.is_cyclic() : return False
 
     for n in self.get_nodes() :
       if (n.get_label() == '&') or (n.get_label() == '|'):
         if (n.outdegree() is not 1) : return False
       elif (n.get_label() == '~') :
         if (n.indegree() is not 1) or (n.outdegree() is not 1) : return False
-      else : 
+      elif (n.get_label() == ''):
         if (n.indegree() is not 1) : return False
+      else : return False
     return True
