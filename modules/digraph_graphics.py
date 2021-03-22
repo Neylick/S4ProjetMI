@@ -31,7 +31,9 @@ class vertex:
   __mul__ = __rmul__
   def rotate(self, angle, v=None):
     if v is None : v = vertex(0,0)
-    return v+vertex(math.cos(angle)*(self.x-v.x), math.sin(angle)*(self.y-v.y)) 
+    s = math.sin(angle)
+    c = math.cos(angle)
+    return v+vertex(c*(self.x-v.x) - s*(self.y-v.y), s*(self.x-v.x) + c*(self.y-v.y)) 
 
 def drawarrow(self, v1, v2, n=1, m=0):
   '''
@@ -39,14 +41,26 @@ def drawarrow(self, v1, v2, n=1, m=0):
   '''
   self.line([v1.coord(),v2.coord()], 'black')
   s = slope_angle(v1,v2)
-  m1 = (v1+v2)*(3/4.)
-  m2 = (v1+v2)*(1/4.)
+  m1 = v1+(v2-v1)*(3/4.)
+  m2 = v1+(v2-v1)*(1/4.)
+  middle = v1+(v2-v1)*(1/2.)
+
+  rm1a = m1.rotate(math.pi/2, middle)
+  rm1b = m1.rotate(-math.pi/2, middle)
+  rm2a = m2.rotate(math.pi/2, middle)
+  rm2b = m2.rotate(-math.pi/2, middle)
+
+
   #First arrow
-  self.line(m1.rotate(s + math.pi/4).coord(), 'black')
-  self.line(m1.rotate(s - math.pi/4).coord(), 'black')
+  self.line([m1.coord(), (rm1a-(rm1a-m1)*(3/4.)).coord()], 'black')
+  self.line([m1.coord(), (rm1b-(rm1b-m1)*(3/4.)).coord()], 'black')
   #Second arrow
-  self.line(m2.rotate(s + math.pi/4).coord(), 'black')
-  self.line(m2.rotate(s - math.pi/4).coord(), 'black')
+  self.line([m2.coord(), (rm2a-(rm2a-m2)*(3/4.)).coord()], 'black')
+  self.line([m2.coord(), (rm2b-(rm2b-m2)*(3/4.)).coord()], 'black')
+
+  #text
+  self.text((m1+vertex(3,3)).coord(),str(n), fill='black')
+  self.text((m2-vertex(7,7)).coord(),str(m), fill='black')
 
 ImageDraw.ImageDraw.arrow = drawarrow
 
@@ -114,10 +128,9 @@ def slope_angle(v1, v2):
   return math.atan(v1.y/(v1.x+b/a))
 
 
-#g = open_digraph.empty()
-#g.random(3, 100)
-#draw.graph(g)
-draw.arrow(vertex(100,100),vertex(200,200))
+g = open_digraph.empty()
+draw.graph(g)
+# draw.arrow(vertex(100,100),vertex(120,120))
 image.save("test.jpg")
 
 

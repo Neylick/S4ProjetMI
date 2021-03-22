@@ -172,5 +172,48 @@ class DigraphTest(unittest.TestCase):
     gtest.add_edge(b,a)
     self.assertTrue(gtest.is_well_formed())
 
-if __name__ == '__main__': # the following code is called only when
-  unittest.main() # precisely this file is run 
+  def test_random(self):
+    grand = open_digraph.empty()
+    grand.random(10,10)
+    self.assertTrue(grand.is_well_formed())
+
+  #Assuming that both change_id and change_ids work fine if this one works 
+  def test_normalize_ids(self):
+    g = open_digraph.empty()
+    g.random(5,5)
+    g.normalise_ids()
+    for k in g.get_nodes_ids():
+      self.assertTrue(k < 5 and k >= 0)
+
+  def test_adjacency(self):
+    g = open_digraph.empty()
+    g.random(10,10)
+    a_m = g.adjacency_matrix()
+    for j in range(len(a_m)):
+      for i in range(len(a_m)):
+        if a_m[j][i] != 0 : self.assertIn(g.get_node_by_id(j).get_children_ids() ,i)
+
+  #Assuming that (max/min) (out/in) degree works if their associates work in the node tests.
+
+  def test_graph_from_adjacency(self):
+    g1 = open_digraph.empty()
+    g1.random(10,10)
+    m = g1.adjacency_matrix()
+    g2 = open_digraph.empty()
+    g2.graph_from_adjacency_matrix(m)
+    self.assertEqual(g1,g2)
+
+
+  def test_iscyclic(self):
+    n0 = node(0,"a",[], [])
+    n1 = node(1,"b",[], [])
+    g = open_digraph([],[], [n0,n1])
+    g.add_edge(0,1)
+    self.assertFalse(g.is_cyclic())
+    g.add_edge(1,0)
+    self.assertTrue(g.is_cyclic())
+
+# the following code is called only when
+# precisely this file is run 
+if __name__ == '__main__': 
+  unittest.main() 

@@ -1,5 +1,8 @@
 from modules.utils import *
 
+'''
+Node class
+'''
 class node:
   #TD1
   def __init__(self, identity, label, parents, children):
@@ -142,6 +145,9 @@ class node:
     '''
     return self.indegree() + self.outdegree()
 
+'''
+Open digraph class
+'''
 
 class open_digraph: # for open directed graph
   #TD1
@@ -248,7 +254,6 @@ class open_digraph: # for open directed graph
     '''
     self.outputs.append(_id)
 
-  #A tester :
   def new_id(self):
     '''
     returns an id that is not already in the digraph 
@@ -262,10 +267,6 @@ class open_digraph: # for open directed graph
     '''
     self.nodes[src].add_child_id(tgt)
     self.nodes[tgt].add_parent_id(src)
-    if len(self.nodes[src].get_parent_ids()) == 0 and src not in self.get_input_ids() :
-      self.add_input_id(src)
-    if len(self.nodes[tgt].get_children_ids()) == 0 and tgt not in self.get_output_ids() :
-      self.add_output_id(tgt)
   
   def add_edges(self, srcs_and_tgts):
     '''
@@ -343,16 +344,16 @@ class open_digraph: # for open directed graph
       for j in range(0, size):
         x = matrix[i][j]
         if x != 0 :
+          if i in res.nodes and j in res.nodes :
+            edges = [(i,j) for _ in range(x)]
+            res.add_edges(edges)
           if i not in res.nodes :
-            children = [j for _ in range(0,x)]
+            children = [j for _ in range(x)]
             res.nodes[i] = node(i, '%d' % i, [], children)
           if j not in res.nodes :
-            parents = [i for _ in range(0, x)]
+            parents = [i for _ in range(x)]
             nj = node(j,'%d' % j, parents, [])
             res.nodes[j] = nj
-          
-          edges = [(i,j) for _ in range(0, x)]
-          res.add_edges(edges)
     return res
 
   def random(self, size, bound, inputs=[], outputs=[], form="free", loop_free=False):
@@ -383,7 +384,6 @@ class open_digraph: # for open directed graph
     return res
 
   def change_id(self, node_id, new_id):
-    
     if new_id in self.get_nodes_ids():
       self.change_id(new_id, self.new_id())
     
@@ -413,11 +413,12 @@ class open_digraph: # for open directed graph
 
 
   def adjacency_matrix(self):
-    matrix = [[0 for _ in len(self.get_nodes())] for _ in len(self.get_nodes())]
+    matrix = [[0 for _ in range(len(self.get_nodes_ids()))] for _ in range(len(self.get_nodes_ids()))]
     self.normalise_ids()
     for n in self.get_nodes():
       for nid in n.get_children_ids():
         matrix[n.get_id()][nid] += 1
+    return matrix
 
   #TD6
 
@@ -462,11 +463,13 @@ class open_digraph: # for open directed graph
     tests wether or not the graph is cyclic : applying the algorithm from the diapositives
     '''
     g = self.copy()
-    while len(g.get_nodes() != 0):
-      for k in g.get_id_node_map() :
+    while len(g.get_nodes_ids()) != 0:
+      found = False
+      for k in g.get_nodes_ids() :
         n = g.get_node_by_id(k)
         if n.indegree() == 0 : 
           g.remove_node_by_id(k)
+          found = True
           break
-      return False
-    return True
+      if not found : return True
+    return False

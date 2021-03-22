@@ -40,8 +40,8 @@ def random_symetric_int_matrix(size, bound, null_diag=True):
   returns a random integer symetric matrix
   '''
   res = random_int_matrix(size, bound, null_diag)
-  for i in range(0,size):
-    for j in range(0,i):
+  for i in range(size):
+    for j in range(i):
       res[i][j]=res[j][i]
   return res
 
@@ -49,9 +49,9 @@ def random_oriented_int_matrix(size, bound, null_diag=True):
   '''
   returns a random integer oriented matrix
   '''
-  res = random_int_matrix(size, bound, null_diag)
-  for i in range(0,size):
-    for j in range(0,i):
+  res = random_int_matrix(size, 20, null_diag)
+  for i in range(size):
+    for j in range(i):
       if res[i][j] != 0 and res[j][i] != 0 :
         if res[i][j] > res[j][i] : 
           res[i][j] = int(randrange(0,bound))
@@ -66,7 +66,7 @@ def random_triangular_int_matrix(size, bound, null_diag=True):
   returns a random integer (upper) triangular matrix
   '''
   res = random_int_matrix(size, bound, null_diag)
-  for i in range(0,size):
-    for j in range(1,i):
-      res[i][size-j] = 0
+  for i in range(size):
+    for j in range(i):
+      res[i][j] = 0
   return res
