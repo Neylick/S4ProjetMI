@@ -131,13 +131,13 @@ class node:
     '''
     returns the number of parents of the node
     '''
-    return len(self.parents)
+    return len(self.get_parent_ids())
 
   def outdegree(self):
     '''
     returns the number of children of the node
     '''
-    return len(self.children)
+    return len(self.get_children_ids())
   
   def degree(self):
     '''
@@ -426,37 +426,57 @@ class open_digraph: # for open directed graph
     '''
     returns the maximum of the nodes' input degrees
     '''
-    return max([n.indegree for n in self.get_nodes()])
+    m = 0
+    for k in self.get_nodes_ids():
+      ind = self.get_node_by_id(k).indegree()
+      if k in self.get_input_ids() : ind+=1
+      if ind > m : m = ind 
+    return m
 
   def min_indegree(self):
     '''
     returns the minimum of the nodes' input degrees
     '''
-    return min([n.indegree for n in self.get_nodes()])
+    m = self.get_node_by_id(self.get_nodes_ids()[0]).indegree()+20
+    for k in self.get_nodes_ids():
+      ind = self.get_node_by_id(k).indegree()
+      if k in self.get_input_ids() : ind+=1
+      if ind < m : m = ind 
+    return m
 
   def max_outdegree(self):
     '''
     returns the maximum of the nodes' output degrees
     '''
-    return max([n.outdegree for n in self.get_nodes()])
+    m = 0
+    for k in self.get_nodes_ids():
+      ind = self.get_node_by_id(k).outdegree()
+      if k in self.get_output_ids() : ind+=1
+      if ind > m : m = ind 
+    return m
 
   def min_outdegree(self):
     '''
     returns the minimum of the nodes' output degrees
     '''
-    return min([n.outdegree for n in self.get_nodes()])
+    m = self.get_node_by_id(self.get_nodes_ids()[0]).outdegree()+20
+    for k in self.get_nodes_ids():
+      ind = self.get_node_by_id(k).outdegree()
+      if k in self.get_input_ids() : ind+=1
+      if ind < m : m = ind 
+    return m
 
   def max_degree(self):
     '''
     returns the maximum of the nodes' total degrees
     '''
-    return max(self.max_indegree, self.max_outdegree)
+    return max(self.max_indegree(), self.max_outdegree())
 
   def min_degree(self):
     '''
     returns the minimum of the nodes' total degrees
     '''
-    return min(self.min_indegree, self.min_outdegree)
+    return min(self.min_indegree(), self.min_outdegree())
 
   def is_cyclic(self):
     '''
