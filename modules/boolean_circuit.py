@@ -26,22 +26,18 @@ class bool_circ(open_digraph):
     tests if the boolean circuit is really a boolean circuit. \n
     label : & or | ->  1 as outdegree \n
     label : ~      ->  1 as outdegree AND 1 as indegree \n
-    label : empty  ->  1 as indegree \n
-    label : other  -> false
+    label : empty  ->  1 as indegree
     '''
     if self.is_cyclic() : return False
 
     for n in self.get_nodes() :
       if (n.get_label() == ''):
         if ((n.indegree() != 1) and (n.get_id() not in self.get_input_ids())) :
-          print("copy")
           return False
       elif (n.get_label() == '&') or (n.get_label() == '|'):
         if (n.outdegree() != 1) and (n.get_id() not in self.get_output_ids()) : 
-          print("and/or")
           return False
       elif (n.get_label() == '~') :
         if ((n.indegree() != 1) and (n.get_id() not in self.get_input_ids())) or ((n.outdegree() != 1) and (n.id not in self.get_output_ids())) : 
-          print("not")
           return False
     return True

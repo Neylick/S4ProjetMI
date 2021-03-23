@@ -145,6 +145,11 @@ class node:
     '''
     return self.indegree() + self.outdegree()
 
+
+
+
+
+
 '''
 Open digraph class
 '''
@@ -389,14 +394,23 @@ class open_digraph: # for open directed graph
     
     n = self.get_node_by_id(node_id)
     for p in n.parents :
-      occ = count_occurences(node_id, p.get_children_ids())
+      occ = count_occurences(p.get_children_ids(), node_id)
       p.remove_child_id_all(node_id)
       for _ in range(occ) : p.add_child_id(new_id)
 
     for c in n.children :
-      occ = count_occurences(node_id, c.get_parents_ids())
+      occ = count_occurences(c.get_parents_ids(), node_id)
       c.remove_parent_id_all(node_id)
       for _ in range(occ) : p.add_parent_id(new_id)
+
+    n = count_occurences(self.get_input_ids() ,node_id)
+    remove_all(self.inputs, node_id)
+    for _ in range(n) : self.add_input_id(new_id)
+
+    n = count_occurences(self.get_output_ids() ,node_id)
+    remove_all(self.outputs, node_id)
+    for _ in range(n) : self.add_output_id(new_id)
+
 
 
   def change_ids(self, old_new_ids):
@@ -493,3 +507,89 @@ class open_digraph: # for open directed graph
           break
       if not found : return True
     return False
+
+  #TD7 : NEED TESTS
+  def min_id(self):
+    return min(self.get_nodes_ids())
+
+  def max_id(self):
+    return max(self.get_nodes_ids())
+
+  def shift_indices(self,n):
+    cpls = [(i, i+n) for i in self.get_nodes_ids()]
+    self.change_ids(cpls)
+
+  def iparallel(self,g):
+    self.shift_indices(g.max_id())
+    for k in g.get_nodes_ids():
+      self.nodes[k] = g.get_node_by_id(k)
+  
+  def parallel(self,g):
+    res = self.copy()
+    res.shift_indices(g.max_id())
+    for k in g.get_nodes_ids():
+      res.nodes[k] = g.get_node_by_id(k)
+    return res
+  
+  def icompose(self,g):
+    if len(g.get_output_ids()) != len(self.get_input_ids()):
+      raise Exception("Compostion failed : output & input could not be linked properly")
+    self.shift_indices(g.max_id())
+    for k in g.get_nodes_ids():
+      self.nodes[k] = g.get_node_by_id(k)
+    for i in range(g.get_output_ids()):
+      self.add_edge(g.get_output_ids()[i], self.get_input_ids()[i])
+    self.input = g.input
+    
+  def compose(self, g):
+    if len(g.get_output_ids()) != len(self.get_input_ids()):
+      raise Exception("Compostion failed : output & input could not be linked properly")
+    res = self.copy()
+    res.shift_indices(g.max_id())
+    for k in g.get_nodes_ids():
+      res.nodes[k] = g.get_node_by_id(k)
+    for i in range(g.get_output_ids()):
+      res.add_edge(g.get_output_ids()[i], self.get_input_ids()[i])
+    res.input = g.input
+    return res
+
+  def connected_components(self):
+    dic = dict()
+    def color_neighbours(n, ncomp):
+      dic[n.id] = ncomp
+      for neighid in n.get_children_ids() :
+        if neighid not in dic : color_neighbours(self.get_node_by_id(neighid), ncomp)
+      for neighid in n.get_parent_ids() :
+        if neighid not in dic : color_neighbours(self.get_node_by_id(neighid), ncomp)
+
+    count_comp = 0
+    for k in self.get_nodes_ids():
+      if k not in dic :
+        color_neighbours(self.get_node_by_id(k), count_comp)
+        count_comp+=1
+
+    return (count_comp, dic)
+  
+  def split_with_invert(self):
+    (nbc, dic) = self.connected_components()
+    res = [open_digraph.empty() for _ in range(nbc)]
+    for i in dic :
+      res[dic[i]].node[i] = self.get_node_by_id(i)
+
+    inps = []
+    for i in range(len(res)):
+      for nid in res[i].get_nodes_ids() :
+        if nid in self.get_input_ids():
+          inps.append(nid)
+    sig = [inps[s] for s in self.get_input_ids()]
+    inverti = invert_permutation(sig) 
+
+    outs = []
+    for i in range(len(res)):
+      for nid in res[i].get_nodes_ids() :
+        if nid in self.get_output_ids():
+          outs.append(nid)
+    sig = [outs[s] for s in self.get_output_ids()]
+    inverto = invert_permutation(sig) 
+
+    return (res, inverti, inverto)

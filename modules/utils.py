@@ -70,3 +70,9 @@ def random_triangular_int_matrix(size, bound, null_diag=True):
     for j in range(i):
       res[i][j] = 0
   return res
+
+def invert_permutation(l):
+  res = [0 for _ in l]
+  for i in range(len(l)):
+    res[l[i]] = i
+  return res
