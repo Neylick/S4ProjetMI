@@ -593,3 +593,15 @@ class open_digraph: # for open directed graph
     inverto = invert_permutation(sig) 
 
     return (res, inverti, inverto)
+
+  #TD9 : NEED TESTS
+
+  def merge_nodes(self, id1, id2, new_label=None):
+    n1 = self.get_node_by_id(id1)
+    n2 = self.get_node_by_id(id2)
+
+    for cid in n2.get_children_ids(): self.add_edge(n1, cid)
+    for pid in n2.get_parent_ids(): self.add_edge(pid, n1)
+
+    if new_label != None : n1.set_label(new_label)
+    self.remove_node_by_id(id2)
