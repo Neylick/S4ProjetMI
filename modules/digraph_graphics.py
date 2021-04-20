@@ -73,23 +73,30 @@ def drawnode(self, node, v, verbose=False):
   if verbose : self.text((v-vertex(12,12)).coord(), str(node.get_id()), fill='black')
 ImageDraw.ImageDraw.node = drawnode
 
-def drawgraph(self, graph, method='manual', node_pos=dict(), input_pos=[], output_pos=[]):
+def drawgraph(self, graph, method='random', node_pos=dict(), input_pos=[], output_pos=[]):
   '''
   draws a graph with selected layout (and positions if manual)   
   '''
   if method == 'random' or method == 'rand' :
     layout = random_layout(graph)
-    drawgraph(graph, 'manual', layout[0], layout[1], layout[2])
+    node_pos = layout[0]
+    input_pos = layout[1]
+    output_pos = layout[2]
   if method == 'circle' :
     layout = circle_layout(graph)
-    drawgraph(graph, 'manual', layout[0], layout[1], layout[2])
-  else :
-    for k in graph.get_id_node_map() :
-      self.node(graph.get_node_by_id(k), node_pos[k])
-    for i in range(len(input_pos)) :
-      self.arrow(input_pos[i], node_pos[graph.get_input_ids()[i]])
-    for i in range(len(input_pos)) :
-      self.arrow(output_pos[i], node_pos[graph.get_output_ids()[i]])
+    node_pos = layout[0]
+    input_pos = layout[1]
+    output_pos = layout[2]
+  
+  for k in graph.get_id_node_map() :
+    self.node(graph.get_node_by_id(k), node_pos[k])
+    #missing arrows between nodes here
+
+  
+  for i in range(len(input_pos)) :
+    self.arrow(input_pos[i], node_pos[graph.get_input_ids()[i]])
+  for i in range(len(output_pos)) :
+    self.arrow(output_pos[i], node_pos[graph.get_output_ids()[i]])
 
 ImageDraw.ImageDraw.graph = drawgraph
 
@@ -100,7 +107,8 @@ def random_layout(graph):
   graph_node_dic = graph.get_id_node_map()
   graph_inputs = graph.get_input_ids()
   graph_outputs = graph.get_output_ids()
-  node_pos = {k:(randrange(0,width), randrange(0,height)) for k in graph_node_dic}
+
+  node_pos = {k:vertex(randrange(0,width), randrange(0,height)) for k in graph_node_dic}
   input_pos = [node_pos[k]+vertex(randrange(0,width/10), randrange(0, height/10)) for k in graph_inputs]
   output_pos = [node_pos[k]+vertex(randrange(0,width/10), randrange(0, height/10)) for k in graph_outputs]
   return (node_pos, input_pos, output_pos)
@@ -113,10 +121,32 @@ def circle_layout(graph):
   size = len(graph.get_nodes())
   graph_inputs = graph.get_input_ids()
   graph_outputs = graph.get_output_ids()
+
   node_pos = {k:v.rotate(2*math.pi/size, vertex(0,0)) for k in graph.get_id_node_map()}
   input_pos = [node_pos[k]+vertex(randrange(0,width/10), randrange(0, height/10)) for k in graph_inputs]
   output_pos = [node_pos[k]+vertex(randrange(0,width/10), randrange(0, height/10)) for k in graph_outputs]
   return (node_pos, input_pos, output_pos)
+
+#TD10
+
+def DAG_layout(graph):
+  graph_inputs = graph.get_input_ids()
+  graph_outputs = graph.get_output_ids()
+
+  node_pos = { k:vertex(0,0) for k in graph.get_id_node_map() }
+
+  topo = graph.topo_sort()
+  line_count = len(topo)+2 #node line + input line + output line
+  for y in range(len(topo)) :
+    line = topo[y]
+    for x in range(len(line)) :
+      node_pos[ line[x] ] = vertex(x*width/len(line), (y+1)*height/line_count)
+
+  input_pos = [ vertex( node_pos[k].coord().x, 0) for k in graph_inputs ]
+  output_pos = [ vertex( node_pos[k].coord().x, height) for k in graph_outputs ]
+
+  return (node_pos, input_pos, output_pos)
+
 
 def slope_angle(v1, v2):
   '''
@@ -129,8 +159,9 @@ def slope_angle(v1, v2):
 
 
 g = open_digraph.empty()
+g.random(5,5,[],[])
 draw.graph(g)
-# draw.arrow(vertex(100,100),vertex(120,120))
+print(g)
 image.save("test.jpg")
 
 

@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./../')
+
 from modules.utils import *
 
 '''
@@ -339,54 +342,37 @@ class open_digraph: # for open directed graph
 
   #TD3
 
-  def graph_from_adjacency_matrix(self, matrix):
+  def from_od(self, graph):
     '''
-    returns a graph generated from the given matrix, treated as an adjacency matrix.
+    basically __init__(opendigraph g), the copy constuctor
     '''
-    size = len(matrix)
-    res = open_digraph.empty()
-    for i in range(0, size):
-      for j in range(0, size):
-        x = matrix[i][j]
-        if x != 0 :
-          if i in res.nodes and j in res.nodes :
-            edges = [(i,j) for _ in range(x)]
-            res.add_edges(edges)
-          if i not in res.nodes :
-            children = [j for _ in range(x)]
-            res.nodes[i] = node(i, '%d' % i, [], children)
-          if j not in res.nodes :
-            parents = [i for _ in range(x)]
-            nj = node(j,'%d' % j, parents, [])
-            res.nodes[j] = nj
-    return res
+    self.inputs = graph.get_input_ids()
+    self.outputs = graph.get_output_ids()
+    self.nodes = graph.nodes
 
   def random(self, size, bound, inputs=[], outputs=[], form="free", loop_free=False):
     '''
     returns a random graph with the selected attributes 
     '''
     res = open_digraph.empty()
-    if "loop-free" in form or "loop_free" in form or "noloop" in form :
-      if "DAG" in form:
-        res= self.graph_from_adjacency_matrix(random_triangular_int_matrix(size,bound,True))
-      elif "oriented" in form:
-        res= self.graph_from_adjacency_matrix(random_oriented_int_matrix(size,bound,True))
-      elif "undirected" in form:
-        res= self.graph_from_adjacency_matrix(random_symetric_int_matrix(size,bound,True))
-      else :
-        res= self.graph_from_adjacency_matrix(random_int_matrix(size,bound,True))
+
+    if loop_free or "loop-free" in form or "loop_free" in form or "noloop" in form :
+      if "DAG" in form: res = graph_from_adjacency_matrix(random_triangular_int_matrix(size,bound,True))
+      elif "oriented" in form: res = graph_from_adjacency_matrix(random_oriented_int_matrix(size,bound,True))
+      elif "undirected" in form: res = graph_from_adjacency_matrix(random_symetric_int_matrix(size,bound,True))
+      #default case
+      else : res = graph_from_adjacency_matrix(random_int_matrix(size,bound,True))
     else :
-      if "DAG" in form:
-        res= self.graph_from_adjacency_matrix(random_triangular_int_matrix(size,bound,False))
-      elif "oriented" in form:
-        res= self.graph_from_adjacency_matrix(random_oriented_int_matrix(size,bound,False))
-      elif "undirected" in form:
-        res= self.graph_from_adjacency_matrix(random_symetric_int_matrix(size,bound,False))
-      else :
-        res= self.graph_from_adjacency_matrix(random_int_matrix(size,bound,False))
+      if "DAG" in form: res = graph_from_adjacency_matrix(random_triangular_int_matrix(size,bound,False))
+      elif "oriented" in form: res = graph_from_adjacency_matrix(random_oriented_int_matrix(size,bound,False))
+      elif "undirected" in form: res = graph_from_adjacency_matrix(random_symetric_int_matrix(size,bound,False))
+      #default case
+      else : res = graph_from_adjacency_matrix(random_int_matrix(size,bound,False))
+    
     res.set_input_ids(inputs)
     res.set_output_ids(outputs)
-    return res
+
+    self.from_od(res)
 
   def change_id(self, node_id, new_id):
     if new_id in self.get_nodes_ids():
@@ -605,3 +591,27 @@ class open_digraph: # for open directed graph
 
     if new_label != None : n1.set_label(new_label)
     self.remove_node_by_id(id2)
+
+
+#TD3 : Function
+
+def graph_from_adjacency_matrix(matrix):
+  '''
+  returns a graph generated from the given matrix, treated as an adjacency matrix.
+  '''
+  size = len(matrix)
+  res = open_digraph.empty()
+  for i in range(0, size):
+    for j in range(0, size):
+      x = matrix[i][j]
+      if x != 0 :
+        if i in res.nodes and j in res.nodes :
+          edges = [(i,j) for _ in range(x)]
+          res.add_edges(edges)
+        if i not in res.nodes :
+          children = [j for _ in range(x)]
+          res.nodes[i] = node(i, '%d' % i, [], children)
+        if j not in res.nodes :
+          parents = [i for _ in range(x)]
+          res.nodes[j] = node(j,'%d' % j, parents, [])
+  return res

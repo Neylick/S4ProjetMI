@@ -49,7 +49,7 @@ def random_oriented_int_matrix(size, bound, null_diag=True):
   '''
   returns a random integer oriented matrix
   '''
-  res = random_int_matrix(size, 20, null_diag)
+  res = random_int_matrix(size, bound, null_diag)
   for i in range(size):
     for j in range(i):
       if res[i][j] != 0 and res[j][i] != 0 :

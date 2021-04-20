@@ -44,7 +44,7 @@ class bool_circ(open_digraph):
 
   # TD8:
 
-  def dijkstra(self, src, direction=None):
+  def dijkstra(self, src, direction=None, target=None):
     Q = [self.get_node_by_id(src).copy()]
     distances = dict()
     distances[src] = 0
@@ -57,6 +57,9 @@ class bool_circ(open_digraph):
         neighbours += self.get_node_by_id(u).parents
       if direction == -1 or direction == None :
         neighbours += self.get_node_by_id(u).children
+
+      if target in neighbours : return distances, prev
+
       for v in neighbours :
         if v not in distances or distances[v] > distances[u] + 1 :
           if v not in distances : Q.append(v)
@@ -64,6 +67,9 @@ class bool_circ(open_digraph):
           prev[v] = u
     return distances, prev
   
+  def topo_sort(self):
+    pass
+
   #TP8 A FINIR IG
 
   #TD 9 : NEED TESTS
